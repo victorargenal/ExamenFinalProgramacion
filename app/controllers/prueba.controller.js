@@ -16,39 +16,26 @@ exports.createName = (req,res) => {
         
     };
 
-    if(req.body.age>=18){
-        Prueba.create(prueba)
-            .then(data => {
-                res.send({
-                    Paciente: data,
-                    mensaje: "mayor de edad"
-                });
-            })
-            .catch(err => {
-                res.status(500).send({
-                    message:
-                        err.message || "ocurrio un erro al crear el registro de prueba"
-                });
-            });
-    }else {
-        res.send( "Eres menor de edad")
-    };
-};
-
-exports.findAll = (req, res) => {
-    const name = req.query.name;
-    var condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
-
-    Prueba.findAll({ where: condition })
+    Prueba.create(prueba)
         .then(data => {
-            res.send({
-                data
-            });
+            res.send(data);
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Erro al encontralos"
+                    err.message || "Ocurrio un error al crear el cliente"
+            });
+        });
+};
+
+exports.findAll = (req, res) => {
+    Prueba.findAll()
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "error al encontrar los registros"
             });
         });
 };
@@ -71,88 +58,63 @@ exports.findOne = (req, res) => {
 
 exports.update = (req, res) => {
     const id = req.params.id;
-    if(req.body.age>=18){
-        Prueba.update(req.body, {
-            where: { id: id }
-            })
-            .then(num => {
-                if (num == 1) {
-                    Prueba.findByPk(id)
-                        .then(data => {
-                            res.send({
-                                message: "Registro Actualizado con exito",
-                                Registro: data
-                            });
-                        })
-                } else {
-                    res.send({
-                        message: `no se pudo actualizar el registro id=${id}. tal vez el registro no existe, o existe un valor nulo`
-                    });
-                }
-            })
-            .catch(err => {
-                res.status(500).send({
-                    message: "error al actualizar el registro id=" + id
+
+    Prueba.update(req.body, {
+        where: { id: id }
+    })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Registro Actualizado."
                 });
-            });
-    }else{
-        res.send({
-            message: "registro menor de edad"
+            } else {
+                res.send({
+                    message: `no se pudo actualizar el registro id=${id}. tal vez el registro no existe, o existe un valor nulo`
+                });
+            }
         })
-    }   
+        .catch(err => {
+            res.status(500).send({
+                message: "error al actualizar el registro id=" + id
+            });
+        });
 };
 
 exports.delete = (req, res) => {
     const id = req.params.id;
-
-    if(req.body.seguridad === "yes"){
-        Prueba.destroy({
-            where: { id: id }
-        })
-            .then(num => {
-                if (num == 1) {
-                    res.send({
-                        message: "Registro eliminado"
-                    });
-                } else {
-                    res.send({
-                        message: `no se pudo eliminar el registro id=${id}. El registro no fue encontado!`
-                    });
-                }
-            })
-            .catch(err => {
-                res.status(500).send({
-                    message: "Could not delete Tutorial with id=" + id
+    Prueba.destroy({
+        where: { id: id }
+    })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Registro eliminado"
                 });
-            });
-    }else {
-        res.send({
-            message: "NO estas completamente seguro"
+            } else {
+                res.send({
+                    message: `no se pudo eliminar el registro id=${id}. El registro no fue encontado!`
+                });
+            }
         })
-    }
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Tutorial with id=" + id
+            });
+        });
 };
 
 exports.deleteAll = (req, res) => {
-    const password = req.body.password;
-    const seguridad = req.body.seguridad;
-
-    if(password == 123 && seguridad === "yes"){
-        Prueba.destroy({
-            where: {},
-            truncate: false
+    Prueba.destroy({
+        where: {},
+        truncate: false
+    })
+        .then(nums => {
+            res.send({ message: `${nums} registros eliminados` });
         })
-            .then(nums => {
-                res.send({ message: `${nums} registros eliminados` });
-            })
-            .catch(err => {
-                res.status(500).send({
-                    message:
-                        err.message || "erro al eliminar todos los registros"
-                });
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "erro al eliminar todos los registros"
             });
-    }else{
-        res.send({
-            message: "Contraseña incorrecta o no estas completamente seguro"
-        })
-    }
+        });
 };

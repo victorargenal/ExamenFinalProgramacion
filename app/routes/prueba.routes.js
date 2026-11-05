@@ -10,6 +10,8 @@ module.exports = app => {
 
     router.put("/update/:id", prueba.update);
 
+    router.delete("/delete/:id", prueba.delete);
+
     router.delete("/delete/", prueba.deleteAll);
 
     app.use("/api/prueba", router);
